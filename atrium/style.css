@@ -23,3 +23,11 @@
 @media(max-width:700px){.bar nav{overflow:auto;justify-content:flex-start}.bar nav a{flex:1;justify-content:center}.bar nav a .ico{display:none}.game-card{flex-direction:column}.game-card>.game-cover{width:100%;height:auto;aspect-ratio:1;background-size:300% 200%}.villa,.course-status{align-items:flex-start;flex-direction:column}.course-status .btn{max-width:none}.game-card>div{padding:10px}.after-museum{padding:14px;gap:12px}.tile-sample{width:42px}.sailing .compass{gap:5px}.compass .soft{padding:7px 8px}.tile-choice{min-width:0}.game-shelf{gap:9px}}
 @media(prefers-reduced-motion:reduce){.parade-mark{animation:none}}
 @media print{body:has(.course-diploma)>:not(dialog){display:none!important}body:has(.course-diploma){background:white;color:black}dialog:has(.course-diploma){position:static;display:block;border:0;width:100%;max-width:none;max-height:none;overflow:visible;background:white;color:black;box-shadow:none}.dialog-body:has(.course-diploma)>.row,.course-diploma+.actions{display:none}.course-diploma{background:white;color:#342b1d;padding:60px 25px}.course-diploma .eyebrow,.course-diploma small{color:#574632}}
+
+.account-button{margin-left:auto;margin-right:10px;white-space:nowrap}
+.account-button[hidden]{display:none}
+.account-button:not([hidden])+#settings{margin-left:0}
+.account-actions{display:flex;flex-wrap:wrap;gap:8px}
+.account-status{min-height:1.5em}
+.account-hint{color:var(--mute)}
+@media(max-width:760px){.account-button{order:1}}

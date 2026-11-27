@@ -16,15 +16,29 @@ const ic=n=>'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentCol
 const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const main=document.querySelector('main'), modal=document.querySelector('dialog'), dlg=document.querySelector('#dialogcontent');
 const storageKey='atrium.lernen.1';
-const initial={lesson:9,scope:"mix",custom:[],cards:{},days:{},rounds:[],session:null};
-let state;
-try{state={...initial,...JSON.parse(localStorage.getItem(storageKey)||'{}')}}catch{state={...initial}}
-if(!state.courseEdition){
+let persistAccountProgress;
+function readProgress(key){
+  try{return JSON.parse(localStorage.getItem(key)||'null')}catch{return null}
+}
+function freshProgress(progress){
+  return {lesson:9,scope:"mix",custom:[],cards:{},days:{},rounds:[],session:null,
+    courseEdition:2,museumEdition:2,...progress};
+}
+const previousProgress=readProgress(storageKey);
+let state=freshProgress(previousProgress);
+if(previousProgress&&!previousProgress.museumEdition)delete state.museumEdition;
+if(previousProgress&&!previousProgress.courseEdition){
   if(state.lesson===1)state.lesson=9;
-  state.courseEdition=2;
   save();
 }
-function save(){try{localStorage.setItem(storageKey,JSON.stringify(state))}catch{document.querySelector('#notice').textContent='Dieser Browser kann den Lernstand gerade nicht speichern.'}}
+function save(){
+  if(persistAccountProgress){persistAccountProgress(state);return}
+  storeProgress(storageKey,state);
+}
+function storeProgress(key,progress){
+  try{localStorage.setItem(key,JSON.stringify(progress))}
+  catch{document.querySelector('#notice').textContent='Dieser Browser kann den Lernstand gerade nicht speichern.'}
+}
 const today=(offset=0)=>{let d=new Date();d.setDate(d.getDate()+offset);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
 const longDate=()=>new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
 const bank=()=>[...vocabulary,...state.custom,...grammar];
