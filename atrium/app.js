@@ -57,48 +57,123 @@ const cta=(name,act,icon='play')=>'<button class="btn" data-act="'+act+'">'+ic(i
 const soft=(name,act,icon='')=>'<button class="soft" data-act="'+act+'">'+(icon?ic(icon):'')+name+'</button>';
 function intro(title,sub,side=''){return '<section class="intro"><div><div class="eyebrow">ROMA A <i class="middot"></i> KLASSE 6</div><h1>'+title+'</h1><p>'+sub+'</p></div>'+side+'</section>'}
 function week(){const day=(new Date().getDay()+6)%7;let labels=['Mo','Di','Mi','Do','Fr','Sa','So'];let n=Math.min(8,state.days[today()]||0);
-return '<aside class="week"><div class="panel-title">'+ic('calendar')+'<h2>Deine Lernwoche</h2></div><div class="streak"><span class="flame">'+ic('flame')+'</span><div><strong>'+count(streak(),'Tag','Tage')+' in Folge</strong><small>'+((state.days[today()]||0)>0?'Heute schon gelernt':streak()?'Heute weiterlernen':'Heute beginnt deine Lernserie')+'</small></div></div><div class="days">'+labels.map((a,i)=>{let d=today(i-day),done=!!state.days[d];return '<div class="day '+(i===day?'today ':'')+(done?'done':'')+'" aria-label="'+a+(i===day?', heute':'')+(done?', gelernt':', offen')+'"><i>'+(done?ic('check'):'')+'</i>'+a+'</div>'}).join('')+'</div><div class="goal"><div class="goal-label"><span>Tagesziel</span><span>'+n+' / 8 Aufgaben</span></div><div class="track"><i style="width:'+n*12.5+'%"></i></div></div></aside>'}
+return '<aside class="week"><div class="panel-title">'+ic('calendar')+'<h2>Deine Lernwoche</h2></div><div class="streak"><span class="flame">'+ic('flame')+'</span><div><strong>'+count(streak(),'Tag','Tage')+' in Folge</strong><small>'+((state.days[today()]||0)>0?'Heute schon gelernt':streak()?'Heute weiterlernen':'Heute beginnt deine Lernserie')+'</small></div></div><div class="days">'+labels.map((a,i)=>{let d=today(i-day),done=!!state.days[d];return '<div class="day '+(i===day?'today ':'')+(done?'done':'')+'" aria-label="'+a+(i===day?', heute':'')+(done?', gelernt':', offen')+'"><i>'+(done?ic('check'):'')+'</i>'+a+'</div>'}).join('')+'</div><div class="goal"><div class="goal-label"><span class="help-label">Tagesziel'+helpLink('tagesziel')+'</span><span>'+n+' / 8 Aufgaben</span></div><div class="track"><i style="width:'+n*12.5+'%"></i></div></div></aside>'}
 function area(link,cls,icon,title,desc,foot){return '<a class="area '+cls+'" href="#'+link+'"><div class="tile">'+ic(icon)+'</div><h3>'+title+'</h3><p>'+desc+'</p><div class="card-foot">'+foot+'</div></a>'}
 function overview(){let ongoing=state.session;const pool=studyPool();return intro('Dein Lernraum','Salve! Bereit für eine kleine Runde Latein?',selectedLesson())+'<div class="primary-grid"><section class="hero"><img class="art" src="assets/forum.webp" alt=""><div class="hero-content"><div class="eyebrow">'+ic('sun')+' Tägliches Training</div><h2>Deine Tagesrunde</h2><p>Frische deine Vokabeln auf und übe die Grammatik deiner Lektion.</p><div class="meta"><span>'+ic('clock')+' ca. 5 Min.</span><span>'+ic('stack')+' 8 Aufgaben</span></div>'+cta(ongoing?'Runde fortsetzen':'Training starten',ongoing?'resume':'daily')+'</div></section>'+week()+'</div>'+rewardOverview()+'<div class="section-heading"><h2>Deine Lernbereiche</h2></div><div class="areas">'+area('vokabeln','','book','Vokabeln','Übe lateinische Wörter und ihre Bedeutungen.',count(pool.filter(c=>c.kind==='v').length,'Vokabel','Vokabeln')+' im Lernset')+area('grammatik','blue','temple','Grammatik','Entdecke Formen, Endungen und Satzbau.',(state.scope==='current'?'Lektion '+state.lesson:count(state.lesson,'Lektion','Lektionen')+' freigeschaltet'))+area('wiederholen','purple','repeat','Wiederholen','Festige, was du schon einmal gelernt hast.',count(due().length,'Aufgabe','Aufgaben')+' fällig')+'</div><div class="statusline">'+ic('book')+' '+(state.scope==='current'?'Nur Lektion ':'Lernstoff bis Lektion ')+state.lesson+' <button class="textbtn" data-act="settings">Anpassen</button></div>'}
 function vocab(){let words=studyPool().filter(c=>c.kind==='v').sort((a,b)=>b.lesson-a.lesson);return intro('Vokabeln','Grundwortschatz und eigene Wörter für deinen Lernstoff.',selectedLesson())+'<section class="sheet"><div class="row"><h2>Dein Wortschatz</h2><div class="actions">'+soft('Wort ergänzen','add','plus')+cta('Vokabeln üben','vtrain')+'</div></div><label class="field">Wort suchen<input class="filter" id="search" type="search" placeholder="Latein oder Deutsch"></label><div class="library" id="wordlist">'+wordList(words)+'</div></section>'}
 function wordList(words){return words.map(w=>'<div class="entry"><div><small class="word-lesson">Lektion '+w.lesson+'</small><strong lang="la">'+esc(w.latin)+'</strong></div><span>'+esc(w.de)+'</span></div>').join('')||'<p>Kein passendes Wort gefunden.</p>'}
 function gram(){return intro('Grammatik','Übe die Grammatik deiner Auswahl oder starte eine einzelne Lektion.',selectedLesson())+'<section class="sheet">'+chapterNote(state.lesson)+'</section><section class="sheet"><div class="row"><h2>Deine Lektionen</h2>'+cta('Grammatik üben','gtrain')+'</div><div class="library">'+lessons.slice(0,state.lesson).map((t,i)=>state.scope==='current'&&i+1!==state.lesson?'':'<button class="entry" data-act="lesson-'+(i+1)+'"><div><span>Lektion '+(i+1)+'</span><br><strong>'+lessonTitles[i]+'</strong><br><span>'+t+'</span></div>'+ic('play')+'</button>').reverse().join('')+'</div></section>'}
 function review(){let items=due();return intro('Wiederholen','Hier findest du Wörter und Formen, die wieder an der Reihe sind.')+'<section class="sheet"><div class="row"><h2>'+count(items.length,'fällige Aufgabe','fällige Aufgaben')+'</h2>'+(items.length?cta('Wiederholung starten','review'):'')+'</div>'+(items.length?'<div class="library">'+items.map(c=>'<div class="entry"><strong>'+esc(c.latin||c.topic)+'</strong><span>'+(c.kind==='v'?'Vokabel':'Grammatik')+'</span></div>').join('')+'</div>':'<p class="empty">Alles aufgefrischt! Schwierige Aufgaben erscheinen hier direkt nach dem Üben. Richtig gelöste kommen mit etwas Abstand zurück.</p>'+cta('Tagesrunde starten','daily'))+'</section>'}
-function sessionResults(session){
-  const answers=session?.answers ?? [];
-  const correct=answers.filter((answer,index)=>answer===session.questions[index].answer).length;
-  return {correct,incorrect:answers.length-correct};
+let chartWeek=0;
+let chartDay;
+
+function dailyAnswerResults(){
+  if(state.dayResults)return state.dayResults;
+  const results={};
+  // Earlier versions only stored the completion date of a round.
+  for(const round of state.rounds){
+    const previous=results[round.date] ?? {correct:0,incorrect:0};
+    if(previous.correct+previous.incorrect+round.n>(state.days[round.date] ?? 0))continue;
+    results[round.date]={
+      correct:previous.correct+round.score,
+      incorrect:previous.incorrect+round.n-round.score
+    };
+  }
+  return results;
 }
-function discardSession(){
-  if(!state.session)return;
-  const {correct,incorrect}=sessionResults(state.session);
-  state.discardedResults={
-    correct:(state.discardedResults?.correct ?? 0)+correct,
-    incorrect:(state.discardedResults?.incorrect ?? 0)+incorrect
-  };
-  state.session=null;
+
+function chartDate(day){
+  return new Date(day+'T12:00:00').toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'});
 }
-function answerChart(total){
-  const active=sessionResults(state.session);
-  const correct=state.rounds.reduce((sum,r)=>sum+r.score,active.correct+(state.discardedResults?.correct ?? 0));
-  const incorrect=state.rounds.reduce((sum,r)=>sum+r.n-r.score,active.incorrect+(state.discardedResults?.incorrect ?? 0));
-  const unknown=Math.max(0,total-correct-incorrect);
-  const outcomes=[['correct','Richtig',correct],['incorrect','Falsch',incorrect]];
-  if(unknown)outcomes.push(['unknown','Ohne gespeichertes Ergebnis',unknown]);
-  const bars=outcomes.filter(([, ,n])=>n>0).map(([kind,,n])=>
-    '<span class="'+kind+'" style="flex-grow:'+n+'"></span>').join('');
-  const legend=outcomes.map(([kind,label,n])=>
-    '<li><span class="answer-key '+kind+'" aria-hidden="true"></span>'+label+' <strong>'+n+'</strong></li>').join('');
+
+function answerChart(){
+  const results=dailyAnswerResults();
+  const dates=Array.from({length:7},(_,i)=>today(i-6-7*chartWeek));
+  const [first]=dates, last=dates.at(-1);
+  const previous=Object.keys(state.days).some(day=>day<first);
+  const rows=dates.map(day=>chartDayResults(day,results));
+  const maximum=Math.max(4,2*Math.ceil(Math.max(...rows.map(row=>row.total))/2));
+  const selected=rows.find(row=>row.day===chartDay) ?? rows.filter(row=>row.total>0).at(-1) ?? rows.at(-1);
+  const kinds=[['correct','Richtig'],['incorrect','Falsch'],['unknown','Ohne Ergebnis']];
+  const bars=rows.map(({day,total,correct,incorrect,unknown})=>{
+    const segments=[correct,incorrect,unknown].map((n,i)=>
+      n?'<span class="'+kinds[i][0]+'" style="height:'+100*n/maximum+'%"></span>':'').join('');
+    return '<button type="button" class="chart-day" data-chart-day="'+day+'" aria-pressed="'+(day===selected.day)+
+      '" aria-label="'+chartDate(day)+' · '+count(total,'Aufgabe','Aufgaben')+'">'+
+      '<span class="chart-column" aria-hidden="true">'+segments+'</span><span class="chart-date" aria-hidden="true">'+chartDate(day)+'</span></button>';
+  }).join('');
   return '<section class="sheet answer-chart" aria-labelledby="answer-chart-title">'+
-    '<h2 id="answer-chart-title">Antworten im Überblick</h2>'+
-    '<div class="answer-bar" aria-hidden="true">'+bars+'</div>'+
-    '<ul class="answer-legend">'+legend+'</ul>'+
-    (total?'':'<p>Deine Antworten erscheinen hier, sobald du mit dem Training beginnst.</p>')+
+    '<div class="chart-header"><h2 id="answer-chart-title">Antworten pro Tag</h2><div class="chart-nav">'+
+      '<button type="button" class="soft" data-chart-shift="1" aria-label="Vorherige Woche" '+(previous?'':'disabled')+'>←</button>'+
+      '<span>'+chartDate(first)+' – '+chartDate(last)+'</span>'+
+      '<button type="button" class="soft" data-chart-shift="-1" aria-label="Neuere Woche" '+(chartWeek?'':'disabled')+'>→</button></div></div>'+
+    '<div class="chart-plot"><div class="chart-scale" aria-hidden="true"><span>'+maximum+'</span><span>'+maximum/2+'</span><span>0</span></div>'+
+    '<div class="chart-days">'+bars+'</div></div>'+
+    '<ul class="answer-legend">'+kinds.map(([kind,label])=>
+      '<li><span class="answer-key '+kind+'" aria-hidden="true"></span>'+label+'</li>').join('')+'</ul>'+
+    '<p class="chart-detail" aria-live="polite">'+chartDayDetail(selected)+'</p>'+
+    (rows.some(row=>row.unknown)?'<p class="chart-note">Bei manchen älteren Antworten ist nur die Zahl der Aufgaben gespeichert.</p>':'')+
     '</section>';
 }
-function progress(){let total=Object.values(state.days).reduce((a,b)=>a+b,0);return intro('Dein Fortschritt','Hier siehst du, wie viel du schon geübt hast.')+answerChart(total)+'<div class="stats">'+[[Object.keys(state.days).length,'Lerntage'],[total,'Beantwortete Aufgaben'],[state.rounds.length,'Abgeschlossene Runden']].map(([n,t])=>'<div class="stat"><strong>'+n+'</strong><small>'+t+'</small></div>').join('')+'</div><div class="section-heading"><h2>Deine letzten Runden</h2></div><section class="sheet">'+(state.rounds.length?state.rounds.slice(-10).reverse().map(r=>'<div class="history"><div><strong>'+esc(r.title)+'</strong><br><span class="muted">'+new Date(r.date+'T12:00:00').toLocaleDateString('de-DE')+'</span></div><span>'+r.score+' / '+r.n+' richtig</span></div>').join(''):'<p>Nach deiner ersten Runde siehst du hier dein Ergebnis.</p><div class="spaced">'+cta('Training starten','daily')+'</div>')+'</section><div class="statusline">'+ic('shield')+' Dein Fortschritt wird in diesem Browser gespeichert.</div>'}
+
+function chartDayResults(day,results){
+  const total=state.days[day] ?? 0;
+  const {correct=0,incorrect=0}=results[day] ?? {};
+  return {day,total,correct,incorrect,unknown:Math.max(0,total-correct-incorrect)};
+}
+
+function chartDayDetail({day,total,correct,incorrect,unknown}){
+  return '<strong>'+chartDate(day)+'</strong> · '+(total
+    ? count(total,'Aufgabe','Aufgaben')+' · '+correct+' richtig · '+incorrect+' falsch'+(unknown?' · '+unknown+' ohne Ergebnis':'')
+    : 'Keine Aufgaben bearbeitet');
+}
+
+function changeChart(button){
+  const chart=button.closest('.answer-chart');
+  if(button.dataset.chartDay){
+    chartDay=button.dataset.chartDay;
+    chart.querySelector('[aria-pressed="true"]').setAttribute('aria-pressed','false');
+    button.setAttribute('aria-pressed','true');
+    chart.querySelector('.chart-detail').innerHTML=chartDayDetail(chartDayResults(chartDay,dailyAnswerResults()));
+    return;
+  }
+  const shift=Number(button.dataset.chartShift);
+  chartWeek+=shift;
+  chartDay=undefined;
+  chart.outerHTML=answerChart();
+  const updated=main.querySelector('.answer-chart');
+  (updated.querySelector('[data-chart-shift="'+shift+'"]:enabled') ??
+    updated.querySelector('[aria-pressed="true"]'))?.focus({preventScroll:true});
+}
+function progress(){let total=Object.values(state.days).reduce((a,b)=>a+b,0);return intro('Dein Fortschritt','Hier siehst du, wie viel du schon geübt hast.')+answerChart()+'<div class="stats">'+[[Object.keys(state.days).length,'Lerntage'],[total,'Beantwortete Aufgaben'],[state.rounds.length,'Abgeschlossene Runden']].map(([n,t])=>'<div class="stat"><strong>'+n+'</strong><small>'+t+'</small></div>').join('')+'</div><div class="section-heading"><h2>Deine letzten Runden</h2></div><section class="sheet">'+(state.rounds.length?state.rounds.slice(-10).reverse().map(r=>'<div class="history"><div><strong>'+esc(r.title)+'</strong><br><span class="muted">'+new Date(r.date+'T12:00:00').toLocaleDateString('de-DE')+'</span></div><span>'+r.score+' / '+r.n+' richtig</span></div>').join(''):'<p>Nach deiner ersten Runde siehst du hier dein Ergebnis.</p><div class="spaced">'+cta('Training starten','daily')+'</div>')+'</section><div class="statusline">'+ic('shield')+' Dein Fortschritt wird in diesem Browser gespeichert.</div>'}
 function showDialog(body){dlg.innerHTML='<div class="dialog-body">'+body+'</div>';if(!modal.open)modal.showModal()}
 function dialogTitle(t){return '<div class="row"><h2>'+t+'</h2><button class="close" data-act="close" aria-label="Schließen">'+ic('x')+'</button></div>'}
+const helpTopics={
+  unterricht:['Wie stelle ich meine Unterrichtslektion ein?',
+    'Tippe in der Übersicht auf „Deine Unterrichtslektion“. Wähle die Geschichte, bei der ihr gerade in der Klasse seid, und tippe auf „Lernstoff speichern“.'],
+  wiederholen:['Was passiert, wenn ich falsch antworte?',
+    'Atrium zeigt dir die richtige Lösung und erklärt sie dir. In der Übersicht kannst du unter „Wiederholen“ die Aufgabe noch einmal üben.'],
+  tagesziel:['Was ist ein Tagesziel?',
+    'Beantworte an einem Tag acht Aufgaben. Auch falsche Antworten zählen. In der Übersicht siehst du bei „Deine Lernwoche“, wie viele Aufgaben dir heute noch fehlen.',
+    'Morgen kannst du dir ein neues Tagesziel holen. Du kannst auch einen Tag Pause machen. Deine bisherigen Tagesziele bleiben erhalten.'],
+  siegel:['Wie bekomme ich ein Lektionssiegel?',
+    'Öffne den Lernweg, wähle eine Lektion und starte den Lektionscheck. Löse mindestens sechs von acht Aufgaben richtig. Dann bekommst du für diese Lektion ein Siegel.',
+    'Ein Häkchen im Lernweg zeigt dir, welche Lektionen du schon geschafft hast.'],
+  spiele:['Wie schalte ich ein Spiel frei?',
+    'Schau auf die Spielkarten in der Schatzkammer. Dort steht zum Beispiel „5 Siegel oder 7 Tagesziele“. Sobald du fünf Siegel gesammelt oder an sieben Tagen dein Tagesziel erreicht hast, kannst du spielen.',
+    'Für das Wagenrennen deckst du alle neun Fundstücke einer Vitrine auf. An jedem Tag mit vier beantworteten Aufgaben kannst du einen Fund aufdecken. Deine erste Fahrt ist gratis. Ab der Freischaltung bringt jede richtige Lernantwort eine Münze. Jede weitere Fahrt kostet acht Münzen.']
+};
+
+function helpLink(topic){
+  return '<button type="button" class="help-icon" data-help="'+topic+'" aria-label="'+helpTopics[topic][0]+'" title="'+helpTopics[topic][0]+'">?</button>';
+}
+
+function showHelp(topic){
+  showDialog(dialogTitle('Hilfe')+'<div class="help-topics">'+Object.entries(helpTopics).map(([key,[title,...paragraphs]])=>
+    '<details id="help-'+key+'" '+(key===topic?'open':'')+'><summary>'+title+'</summary>'+
+      paragraphs.map(p=>'<p>'+p+'</p>').join('')+'</details>').join('')+'</div>');
+  if(topic)dlg.querySelector('#help-'+topic+' summary').focus();
+}
 function lessonOptions(band,selected){
   return lessonTitles.map((t,i)=>(i<15?1:2)===band?'<option value="'+(i+1)+'" '+(selected===i+1?'selected':'')+'>L'+(i+1)+' · '+esc(t)+'</option>':'').join('');
 }
@@ -148,7 +223,7 @@ if(type.startsWith('check-')){
 }
 else if(type==='daily'){const v=dailyFour(pool.filter(w=>w.kind==='v')),g=dailyFour(pool.filter(w=>w.kind==='g'));chosen=v.flatMap((w,i)=>[w,g[i]]).filter(Boolean);title='Tagesrunde'}
 else{let single=type.startsWith('lesson-');let cards=type==='review'?due():pool.filter(w=>single?w.kind==='g'&&w.lesson===Number(type.slice(7)):w.kind===(type==='vtrain'?'v':'g'));chosen=ordered(cards).slice(0,8);title=single?'Grammatik · Lektion '+type.slice(7):({review:'Wiederholung',vtrain:'Vokabeltraining',gtrain:'Grammatiktraining'})[type]}
-if(!chosen.length){go('wiederholen');return}const wordPool=checkLesson?bank().filter(c=>c.lesson===checkLesson):studyPool();discardSession();state.session={title,checkLesson,questions:chosen.map(c=>makeQ(c,wordPool)),index:0,answers:[]};save();go('training')}
+if(!chosen.length){go('wiederholen');return}const wordPool=checkLesson?bank().filter(c=>c.lesson===checkLesson):studyPool();state.session={title,checkLesson,questions:chosen.map(c=>makeQ(c,wordPool)),index:0,answers:[]};save();go('training')}
 function training(){let s=state.session;if(!s)return overview();let q=s.questions[s.index],selected=s.answers[s.index],answered=selected!==undefined;
 return '<div class="question-box"><button class="back" data-act="pause">Runde pausieren</button><section class="sheet"><div class="row"><span class="eyebrow">'+esc(s.title)+'</span><span class="muted">Aufgabe '+(s.index+1)+' / '+s.questions.length+'</span></div><div class="track"><i style="width:'+100*s.index/s.questions.length+'%"></i></div><span class="smalltag">'+q.label+'</span><h1>'+esc(q.prompt)+'</h1><div class="choices">'+q.options.map((o,i)=>'<button class="choice '+(answered?(o===q.answer?'right':o===selected?'wrong':''):'')+'" data-act="answer-'+i+'" '+(answered?'disabled':'')+'>'+esc(o)+'</button>').join('')+'</div>'+(answered?'<div class="feedback" role="status"><strong>'+(selected===q.answer?'Richtig gelöst!':'Die richtige Antwort lautet „'+esc(q.answer)+'“.')+'</strong><p>'+esc(q.why)+'</p>'+'</div><div class="actions training-actions">'+cta(s.index+1===s.questions.length?'Ergebnis ansehen':'Nächste Aufgabe','next','check')+rewardMilestone()+'</div>':'')+'</section></div>'}
 function revealTrainingAction(button){
@@ -160,14 +235,42 @@ function revealTrainingAction(button){
   const overflow=button.getBoundingClientRect().bottom+clearance-bottom;
   if(overflow>0)window.scrollBy({top:overflow,behavior:'instant'});
 }
-function answer(i){let s=state.session;if(!s||s.answers.length>s.index)return;let q=s.questions[s.index],a=q.options[i];if(a===undefined)return;s.answers.push(a);let old=state.cards[q.id]?.level||0;let level=a===q.answer?Math.min(old+1,5):0;state.cards[q.id]={level,due:today([0,1,3,7,14,30][level])};state.days[today()]=(state.days[today()]||0)+1;save();render(false);revealTrainingAction(main.querySelector('[data-act="next"]'))}
+function answer(i){
+  const session=state.session;
+  if(!session||session.answers.length>session.index)return;
+  const question=session.questions[session.index], selected=question.options[i];
+  if(selected===undefined)return;
+  const correct=selected===question.answer;
+  session.answers.push(selected);
+  if(correct&&raceUnlockProgress()===9)state.raceCoins=raceCoins()+1;
+
+  const oldLevel=state.cards[question.id]?.level??0;
+  const level=correct?Math.min(oldLevel+1,5):0;
+  state.cards[question.id]={level,due:today([0,1,3,7,14,30][level])};
+  const day=today();
+  state.dayResults??=dailyAnswerResults();
+  const results=state.dayResults[day]??={correct:0,incorrect:0};
+  results[correct?'correct':'incorrect']++;
+  state.days[day]=(state.days[day]||0)+1;
+  save();
+  render(false);
+  revealTrainingAction(main.querySelector('[data-act="next"]'));
+}
 function next(){let s=state.session;if(!s||s.answers.length!==s.index+1)return;if(s.index<s.questions.length-1){s.index++;save();render();return}recordRound(s);state.session=null;save();go('ergebnis')}
 function result(){let r=state.rounds.at(-1);if(!r)return overview();return '<div class="question-box"><section class="sheet"><div class="eyebrow">'+ic('check')+' Runde abgeschlossen</div><h1 class="result-title">Bene factum! Gut gemacht.</h1><div class="result-score">'+r.score+' / '+r.n+'</div><p>Aufgaben richtig gelöst. '+(r.score<r.n?'Die schwierigen Aufgaben findest du unter „Wiederholen“.':'Diese Aufgaben kommen später zur Wiederholung zurück.')+'</p>'+checkResult(r)+rewardMilestone()+'<div class="actions spaced">'+cta('Zur Übersicht','home','grid')+(due().length?soft('Wiederholen','review'):'')+'</div></section></div>'}
 function render(reset=true){let r=getRoute();document.querySelector('#nav').innerHTML=pages.map(([url,t,icon])=>'<a href="#'+url+'" '+(url===r?'class="active" aria-current="page"':'')+'>'+ic(icon)+t+'</a>').join('');main.innerHTML=({uebersicht:overview,vokabeln:vocab,grammatik:gram,fortschritt:progress,schatzkammer:collection,lernweg:passport,wiederholen:review,training,ergebnis:result}[r]||overview)();if(reset){window.scrollTo({top:0,behavior:'instant'});main.focus({preventScroll:true});if(r==='training')revealTrainingAction(main.querySelector('[data-act="next"]'))}}
 document.querySelector('#settings').innerHTML=ic('gear');document.querySelector('#settings').onclick=settings;
+document.querySelector('.header-help').onclick=()=>showHelp();
+document.addEventListener('click',event=>{
+  const helpButton=event.target.closest('[data-help]');
+  if(helpButton)showHelp(helpButton.dataset.help);
+  const chartButton=event.target.closest('[data-chart-shift], [data-chart-day]');
+  if(chartButton)changeChart(chartButton);
+});
 document.addEventListener('click',e=>{let reward=e.target.closest('[data-prize]')?.dataset.prize;if(reward){handleReward(reward);return}let a=e.target.closest('[data-act]')?.dataset.act;if(!a)return;if(a==='close')modal.close();else if(a==='settings')settings();else if(a==='add')addWord();else if(a==='resume'){if(modal.open)modal.close();go('training')}else if(a==='pause'||a==='home')go('uebersicht');else if(a==='next')next();else if(a.startsWith('answer-'))answer(Number(a.slice(7)));else if(a.startsWith('replace-')){modal.close();launch(a.slice(8))}else begin(a)});
 document.addEventListener('input',e=>{if(e.target.id==='search'){const term=e.target.value.trim().toLocaleLowerCase('de');document.querySelector('#wordlist').innerHTML=wordList(studyPool().filter(w=>w.kind==='v'&&(w.latin+' '+w.de).toLocaleLowerCase('de').includes(term)))}});
-document.addEventListener('submit',e=>{e.preventDefault();let f=new FormData(e.target);if(e.target.id==='prefs'){const lesson=Number(f.get('lesson'));const scope=f.get('scope')==='current'?'current':'mix';if(lesson<1||lesson>lessonTitles.length)return;if(lesson!==state.lesson||scope!==state.scope)discardSession();state.lesson=lesson;state.scope=scope}else if(e.target.id==='wordform'){const latin=f.get('latin').trim(),de=f.get('de').trim();if(!latin||!de){document.querySelector('#err').textContent='Bitte fülle beide Wörter aus.';return}if(bank().some(w=>w.latin?.toLowerCase()===latin.toLowerCase()&&w.de.toLowerCase()===de.toLowerCase())){document.querySelector('#err').textContent='Dieses Wortpaar ist schon vorhanden.';return}state.custom.push({id:'u'+crypto.randomUUID(),kind:'v',latin,de,lesson:Number(f.get('lesson'))})}else return;save();modal.close();render()});
+document.addEventListener('submit',e=>{e.preventDefault();let f=new FormData(e.target);if(e.target.id==='prefs'){const lesson=Number(f.get('lesson'));const scope=f.get('scope')==='current'?'current':'mix';if(lesson<1||lesson>lessonTitles.length)return;if(lesson!==state.lesson||scope!==state.scope)state.session=null;state.lesson=lesson;state.scope=scope}else if(e.target.id==='wordform'){const latin=f.get('latin').trim(),de=f.get('de').trim();if(!latin||!de){document.querySelector('#err').textContent='Bitte fülle beide Wörter aus.';return}if(bank().some(w=>w.latin?.toLowerCase()===latin.toLowerCase()&&w.de.toLowerCase()===de.toLowerCase())){document.querySelector('#err').textContent='Dieses Wortpaar ist schon vorhanden.';return}state.custom.push({id:'u'+crypto.randomUUID(),kind:'v',latin,de,lesson:Number(f.get('lesson'))})}else return;save();modal.close();render()});
 modal.addEventListener('click',e=>{if(e.target===modal){const b=modal.getBoundingClientRect();if(e.clientX<b.left||e.clientX>b.right||e.clientY<b.top||e.clientY>b.bottom)modal.close()}});
 upgradeMuseum();
+connectRaceControls();
 window.addEventListener('hashchange',()=>{if(modal.open)modal.close();render()});window.addEventListener('pageshow',()=>render(false));render(false);
