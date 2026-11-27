@@ -12,7 +12,7 @@ Atrium begleitet beide Bände von **ROMA A** (Lektionen 1–30) mit selbst erste
 
 Die [Offline-Datei](offline/Atrium-Latein.html) herunterladen und im Browser öffnen. Sie enthält alle für die App benötigten Dateien.
 
-Die [Webfassung](atrium/) ist eine statische App ohne Build-Schritt. Zum lokalen Start im Repository ausführen:
+Die [Webfassung auf GitHub Pages](https://abaron-lab.github.io/lern-suite/atrium/) lässt sich direkt im Browser öffnen. Zum lokalen Start der statischen App im Repository ausführen:
 
 ```sh
 python3 -m http.server --directory atrium 8000
@@ -30,7 +30,9 @@ Lernkonten sind optional. Mit einer bestätigten E-Mail-Adresse und einem Passwo
 
 1. Ein Supabase-Projekt anlegen und die [SQL-Migration](supabase/migrations/20261127000000_atrium_progress.sql) ausführen. Die Datenbankregeln erlauben jedem angemeldeten Konto nur den Zugriff auf den eigenen Lernstand.
 2. Unter **Authentication → Sign In / Providers → Email** E-Mail-Anmeldung und **Confirm email** aktivieren. Für Registrierungen außerhalb des Projektteams einen eigenen SMTP-Absender konfigurieren. Die Standardvorlagen für die E-Mail-Bestätigung und das Zurücksetzen des Passworts verwenden den Bestätigungslink.
-3. In **Authentication → URL Configuration** die HTTPS-Adresse der bereitgestellten App als **Site URL** und den vollständigen App-Pfad als zulässige Weiterleitung hinterlegen. Beim lokalen Test zum Beispiel `http://localhost:8000/` zusätzlich freigeben.
-4. In [`atrium/account-config.js`](atrium/account-config.js) die Projekt-URL und den **Publishable Key** eintragen. Der Webclient lädt dann die fest versionierte Supabase-Bibliothek über jsDelivr und prüft dabei ihre Prüfsumme. Die Webfassung anschließend bereitstellen.
+3. In **Authentication → URL Configuration** die beiden GitHub-Pages-Adressen eintragen.
+   - **Site URL** `https://abaron-lab.github.io/lern-suite/`
+   - **Redirect URLs** `https://abaron-lab.github.io/lern-suite/atrium/` für die E-Mail-Bestätigung und das Zurücksetzen des Passworts. Beim lokalen Test zusätzlich `http://localhost:8000/` freigeben.
+4. Im Supabase-Dashboard das Projekt öffnen. Unter **Settings → API Keys** steht der **Publishable key** mit dem Präfix `sb_publishable_`. Die Projekt-URL (`https://<projekt>.supabase.co`) steht im Dialog **Connect**. Beide Werte in [`atrium/account-config.js`](atrium/account-config.js) eintragen. Der Publishable Key ist für den Browser bestimmt. Secret Key und `service_role` gehören ausschließlich auf den Server. Der Webclient lädt die fest versionierte Supabase-Bibliothek über jsDelivr und prüft ihre Prüfsumme.
 
 Ohne diese Konfiguration bleibt Atrium im Gastmodus. Die separate Offline-HTML speichert den Lernstand lokal. Das Lernkonto benötigt weder einen Namen noch das Geburtsdatum oder die Schule. Die E-Mail-Bestätigung prüft den Zugriff auf das angegebene Postfach.

@@ -5,7 +5,8 @@
   if (!config?.url || !config.publishableKey || location.protocol === 'file:') return;
 
   const button = document.querySelector('#account');
-  const redirect = new URL(location.pathname, location.origin).href;
+  const pagePath = location.pathname.replace(/\/index\.html$/, '/');
+  const redirect = new URL(pagePath, location.origin).href;
   const table = 'atrium_progress';
   let client;
   let account;
