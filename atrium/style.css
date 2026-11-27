@@ -31,3 +31,32 @@
 .account-status{min-height:1.5em}
 .account-hint{color:var(--mute)}
 @media(max-width:760px){.account-button{order:1}}
+
+/* Keep exercise actions reachable above mobile browser controls. */
+main{padding-bottom:calc(42px + env(safe-area-inset-bottom, 0px))}
+.training-actions{align-items:flex-start}
+.training-actions .btn{min-height:44px;scroll-margin-bottom:20px}
+.training-actions .milestone{margin:0;min-height:44px;padding:0 10px;font-size:.9rem;flex-direction:row;align-items:center;gap:10px}
+.training-actions .milestone .textbtn{min-height:42px;white-space:normal}
+.answer-chart+.stats{margin-top:18px}
+.answer-bar{display:flex;height:16px;border-radius:8px;overflow:hidden;background:#393c38;margin:12px 0}
+.answer-bar span{flex-basis:0}
+.answer-chart .correct{background:#9bc4a6}
+.answer-chart .incorrect{background:#df9c93}
+.answer-chart .unknown{background:#92958d}
+.answer-legend{display:flex;flex-wrap:wrap;gap:8px 24px;list-style:none;margin:0;padding:0}
+.answer-legend li{display:flex;align-items:center;gap:7px}
+.answer-key{display:inline-block;width:10px;height:10px;border-radius:50%;flex:none}
+.answer-chart p{margin-top:10px}
+@media(max-width:760px){
+  main{padding-bottom:calc(64px + env(safe-area-inset-bottom, 0px))}
+  .training-actions .btn{scroll-margin-bottom:64px}
+  .question-box{margin-top:0}
+  .question-box .track{margin:10px 0 14px}
+  .question-box h1{font-size:clamp(1.5rem, 6vw, 2rem);margin:9px 0 14px}
+  .choices{gap:8px}
+  .choice{min-height:44px;padding:9px 12px}
+  .feedback{padding-top:12px}
+  .feedback p{margin-bottom:10px}
+  .training-actions .milestone{flex-wrap:wrap;column-gap:10px;row-gap:0}
+}
