@@ -19,7 +19,7 @@ function arcadeSection(){
     const requirement=open?(state.gameWins?.[a.id]?'Schon gemeistert':'Spiel freigeschaltet'):(a.days?a.goal+' Siegel oder '+a.days+' Tagesziele':'Alle 30 Lektionssiegel');
     return '<article class="game-card">'+adventureArt(a)+'<div><small>'+requirement+'</small><h3>'+a.name+'</h3><p>'+a.text+'</p>'+(open?rewardButton(a.id==='festival'?'Fest beginnen':'Spielen','game:'+a.id,'soft'):'')+'</div></article>';
   }).join('');
-  return '<div class="section-heading"><h2>Große Belohnungen</h2></div><p class="gallery-lead">Nach dem Wagenrennen warten diese Abenteuer. Du hast '+count(seals,'Lektionssiegel','Lektionssiegel')+' und '+count(days,'Tagesziel','Tagesziele')+' mit acht Aufgaben erreicht.</p><div class="game-shelf">'+cards+'</div>';
+  return '<div class="section-heading"><h2>Große Belohnungen</h2>'+helpLink('spiele')+'</div><p class="gallery-lead">Nach dem Wagenrennen warten diese Abenteuer. Du hast '+count(seals,'Lektionssiegel','Lektionssiegel')+' und '+count(days,'Tagesziel','Tagesziele')+' mit acht Aufgaben erreicht.</p><div class="game-shelf">'+cards+'</div>';
 }
 let game=null;
 const roll=max=>Math.floor(Math.random()*max);

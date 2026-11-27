@@ -54,7 +54,7 @@ function cabinetGallery(days){
   const focus=pending<0?Math.min(days.length,44):pending;
   const view=cabinetView??Math.floor(focus/9), first=view*9;
   const tabs=exhibits.map((name,i)=>{
-    const done=days.slice(i*9,i*9+9).filter(d=>opened[d]).length;
+    const done=cabinetFindCount(days,i);
     return '<button class="cabinet-tab" aria-pressed="'+(view===i)+'" data-prize="cabinet:'+i+'">'+treasureArt(i*9)+'<span>'+name+'<small>'+done+' von 9</small></span></button>';
   }).join('');
   const cards=treasures.slice(first,first+9).map(([latin,name],j)=>{

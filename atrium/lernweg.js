@@ -20,7 +20,7 @@ function passport(){
     return '<button class="entry course-entry" data-prize="chapter:'+n+'"><span class="chapter-seal '+(passed?'earned':'')+'">'+(passed?ic('check'):n)+'</span><span><small>Lektion '+n+(n===state.lesson?' · Im Unterricht':'')+'</small><strong>'+esc(title)+'</strong><small>'+esc(lessons[n-1])+'</small></span></button>';
   }).join('');
   return intro('Dein Lektionspass','Wähle eine Geschichte, lies die Merkkarte und sammle dein Lektionssiegel.')+
-    '<section class="sheet course-status"><div><div class="eyebrow">Dein Kursstand</div><h2>'+sealCount()+' von 30 Siegeln</h2><p>Sechs richtige Antworten in einem Lektionscheck bringen dir ein Siegel. Du kannst überall einsteigen.</p></div>'+rewardButton('Zu L'+state.lesson+' · '+lessonTitles[state.lesson-1],'chapter:'+state.lesson,'btn')+'</section>'+
+    '<section class="sheet course-status"><div><div class="eyebrow">Dein Kursstand</div><div class="help-label"><h2>'+sealCount()+' von 30 Siegeln</h2>'+helpLink('siegel')+'</div><p>Sechs richtige Antworten in einem Lektionscheck bringen dir ein Siegel. Du kannst überall einsteigen.</p></div>'+rewardButton('Zu L'+state.lesson+' · '+lessonTitles[state.lesson-1],'chapter:'+state.lesson,'btn')+'</section>'+
     '<div class="section-heading"><h2>Die Lektionen</h2></div><div class="actions pass-tabs">'+[1,2].map(b=>'<button class="soft" aria-pressed="'+(b===band)+'" data-prize="band:'+b+'">'+(b===1?'Lektionen 1–15':'Lektionen 16–30')+'</button>').join('')+'</div><div class="library">'+cards+'</div>';
 }
 function recordRound(s){
