@@ -167,7 +167,7 @@ function handleReward(action){
   else if(key==='chapter')inspectChapter(Number(arg));
   else if(key==='band'&&['1','2'].includes(arg)){passBand=Number(arg);render(false)}
   else if(key==='check'){modal.close();begin('check-'+arg)}
-  else if(key==='select'){if(state.lesson!==Number(arg))state.session=null;state.lesson=Number(arg);save();modal.close();go('uebersicht')}
+  else if(key==='select'){if(state.lesson!==Number(arg))discardSession();state.lesson=Number(arg);save();modal.close();go('uebersicht')}
   else if(key==='passport'){if(modal.open)modal.close();go('lernweg')}
   else if(key==='find')reveal(arg);
   else if(key==='race')startRace(arg);
